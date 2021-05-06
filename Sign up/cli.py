@@ -3,6 +3,7 @@ import socket
 
 # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print('Tạm thời nhập Ip = 127.0.0.1, gặp giải thích')
 host = input('Enter server\'s IP: ')
 port = 1233
 # connect the client
@@ -10,6 +11,12 @@ port = 1233
 client.connect((host, port))
 
 while True:
+	response = client.recv(2048)
+	choice = input(response.decode())	
+	client.send(str.encode(choice))
+	if int(choice)==3:
+		client.close()
+		break
 
 	response = client.recv(2048)
 	# Input UserName

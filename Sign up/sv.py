@@ -1,7 +1,6 @@
 import socket
 import os
 import threading
-import hashlib
 import json
 
 
@@ -16,13 +15,13 @@ except socket.error as e:
     print(str(e))
 
 print('Waitiing for a Connection..')
-ServerSocket.listen(3)
-HashTable = {}
+ServerSocket.listen(5)
 
 userdata = {}
 userdata['account'] = []
 with open('userdata.json','w') as f: 
 		json.dump(userdata, f, indent=2) 
+
 
 def write_json(data, filename='userdata.json'): 
 	with open(filename,'w') as f: 
@@ -73,11 +72,19 @@ def threaded_client(connection):
 
 while True:
     Client, address = ServerSocket.accept()
-    client_handler = threading.Thread(
-        target=threaded_client,
-        args=(Client,)  
-    )
-    client_handler.start()
-    ThreadCount += 1
-    print('Connection Request: ' + str(ThreadCount))
+
+    Client.send(b'1. Sign up\n2. Login\n3. Exit\n')
+    choice = int(Client.recv(2048))
+    if choice == 3:
+        Client.close()
+        break
+        #ServerSocket.close()
+    else:
+        client_handler = threading.Thread(
+            target=threaded_client,
+            args=(Client,)  
+        )
+        client_handler.start()
+        ThreadCount += 1
+        print('Connection Request: ' + str(ThreadCount))
 ServerSocket.close()
