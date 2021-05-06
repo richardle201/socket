@@ -3,7 +3,7 @@ import socket
 
 # create an ipv4 (AF_INET) socket object using the tcp protocol (SOCK_STREAM)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = socket.gethostname()
+host = input('Enter server\'s IP: ')
 port = 1233
 # connect the client
 # client.connect((target, port))
