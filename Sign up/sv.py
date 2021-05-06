@@ -75,10 +75,10 @@ while True:
 
     Client.send(b'1. Sign up\n2. Login\n3. Exit\n')
     choice = int(Client.recv(2048))
+    
     if choice == 3:
         Client.close()
         break
-        #ServerSocket.close()
     else:
         client_handler = threading.Thread(
             target=threaded_client,
