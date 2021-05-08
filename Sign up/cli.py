@@ -10,32 +10,39 @@ port = 1233
 # client.connect((target, port))
 client.connect((host, port))
 
+response = client.recv(2048)
+choice = input(response.decode())	
+client.send(str.encode(choice))
 while True:
-	response = client.recv(2048)
-	choice = input(response.decode())	
-	client.send(str.encode(choice))
+	# response = client.recv(2048)
+	# choice = input(response.decode())	
+	# client.send(str.encode(choice))
 	if int(choice)==3:
+		print(client.recv(2048).decode())
 		client.close()
 		break
+	elif int(choice)==1 or int(choice)==2:
+		response = client.recv(2048)
+		# Input UserName
+		name = input(response.decode())	
+		client.send(str.encode(name))
+		response = client.recv(2048)
+		# Input Password
+		password = input(response.decode())	
+		client.send(str.encode(password))
 
-	response = client.recv(2048)
-	# Input UserName
-	name = input(response.decode())	
-	client.send(str.encode(name))
-	response = client.recv(2048)
-	# Input Password
-	password = input(response.decode())	
-	client.send(str.encode(password))
+		''' Response : Status of Connection :
+			1 : Registeration successful 
+			2 : Username already existed
+		'''
+		# Receive response 
+		response = client.recv(2048)
+		response = response.decode()
 
-	''' Response : Status of Connection :
-		1 : Registeration successful 
-		2 : Username already existed
-	'''
-	# Receive response 
-	response = client.recv(2048)
-	response = response.decode()
-
-	print(response)
-	if response == 'Registeration Successful':
-		client.close()
-		break
+		print(response)
+		if response == 'Registeration Successful' and int(choice)==1:
+			client.close()
+			break
+		if response == 'Login Successful' and int(choice)==2:
+			client.close()
+			break
