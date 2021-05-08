@@ -7,3 +7,8 @@ https://codezup.com/socket-server-with-multiple-clients-model-multithreading-pyt
 
 # disconnect handle
 https://stackoverflow.com/questions/17386487/python-detect-when-a-socket-disconnects-for-any-reason
+
+# api
+api_key = '2fe092a70821d857336c4a91ef84636c'
+https://javascript.plainenglish.io/display-7-day-weather-forecast-with-openweather-api-aac8ba21c9e3
+https://rapidapi.com/blog/weather-api-python/
