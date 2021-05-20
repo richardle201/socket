@@ -1,6 +1,4 @@
-import socket
-import tkinter as ttk
-# from tkinter import *
+from tkinter import *
 import tkinter.ttk as exTK
 from tkinter import filedialog
 import pyautogui
@@ -8,8 +6,7 @@ import pickle
 from PIL import ImageTk, Image
 
 
-
-class monitor(ttk.Frame):
+class monitor(Frame):
     def placeGUI(obj, e):
         if e.widget == obj:
             obj.update()
@@ -37,7 +34,7 @@ class monitor(ttk.Frame):
     def __init__(obj, master):
         super().__init__(master)
         obj.inputText = exTK.Entry(obj)
-        obj.connect_ = exTK.Button(obj, text='Kết nối',command=Cli)
+        obj.connect_ = exTK.Button(obj, text='Kết nối', command=obj.connect)
         obj.ProcessRunning_ = exTK.Button(obj, text='Process Running')
         obj.AppRunning_ = exTK.Button(obj, text='App Running')
         obj.Shutdown_ = exTK.Button(obj, text='Tắt máy')
@@ -46,32 +43,21 @@ class monitor(ttk.Frame):
         obj.EditRegistry_ = exTK.Button(obj, text='Sửa Registry')
         obj.Exit_ = exTK.Button(obj, text='Thoát', command=obj.quit)
         master.bind('<Configure>', obj.placeGUI)
+    def connect(obj):
+        ip = obj.inputText.get()
+
 
 
 def guiStart():
-    win = ttk.Tk()
+    win = Tk()
     win.title('Client')
     win.geometry('700x600')
     GiaoDien = monitor(win)
     GiaoDien.place(relwidth=1, relheight=1)
     win.mainloop()
-    
-def Cli():
-    class client():
-        def __init__(self):
-            self.s = socket.socket()
-            self.port = 2345
-        def connect(self,ip):
-            self.s.connect((ip,self.port))   
-        def isConnected(self):
-            if (self.s.recv(2048)).decode() == 'Connecting...':
-                return True
-    s = client()
-    s.connect(socket.gethostname())
-    return s.isConnected()
 
 def ScreenShot():
-    class monitor2(ttk.Frame):
+    class monitor2(Frame):
         def placeGUI(obj, e):
             if e.widget == obj:
                 obj.update()
@@ -85,7 +71,7 @@ def ScreenShot():
 
         def __init__(obj, master):
             super().__init__(master)
-            obj.panel = ttk.Label(obj)
+            obj.panel = Label(obj)
             obj.screen_ = exTK.Button(obj, text='Chụp', command=obj.TakePic)
             obj.save_ = exTK.Button(obj, text='Lưu', command=obj.saved)
             master.bind('<Configure>', obj.placeGUI)
@@ -111,7 +97,7 @@ def ScreenShot():
 
 
     def guiScreen():
-        root = ttk.Toplevel()
+        root = Toplevel()
         root.title('Pic')
         root.geometry('700x600')
         GiaoDien = monitor2(root)
