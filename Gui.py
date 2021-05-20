@@ -1,4 +1,4 @@
-from tkinter import *
+import tkinter as tkr
 import tkinter.ttk as exTK
 from tkinter import filedialog
 import pyautogui
@@ -7,7 +7,7 @@ from PIL import ImageTk, Image
 import socket
 
 
-class monitor(Frame):
+class monitor(tkr.Frame):
     def placeGUI(obj, e):
         if e.widget == obj:
             obj.update()
@@ -51,6 +51,7 @@ class monitor(Frame):
         return s.isConnected()
 
 class client():
+    status = False
     def __init__(self,ip):
         self.s = socket.socket()
         self.ip = ip
@@ -59,12 +60,16 @@ class client():
         self.s.connect((self.ip,self.port))   
     def isConnected(self):
         if (self.s.recv(2048)).decode() == 'Connecting...':
+            self.status = True
             return True
+        self.status = False
+        return False
+            # print ('đã kết nối thành công')
 
 
 
 def guiStart():
-    win = Tk()
+    win = tkr.Tk()
     win.title('Client')
     win.geometry('700x600')
     GiaoDien = monitor(win)
@@ -72,7 +77,7 @@ def guiStart():
     win.mainloop()
 
 def ScreenShot():
-    class monitor2(Frame):
+    class monitor2(tkr.Frame):
         def placeGUI(obj, e):
             if e.widget == obj:
                 obj.update()
@@ -90,6 +95,7 @@ def ScreenShot():
             obj.screen_ = exTK.Button(obj, text='Chụp', command=obj.TakePic)
             obj.save_ = exTK.Button(obj, text='Lưu', command=obj.saved)
             master.bind('<Configure>', obj.placeGUI)
+            
 
         def saved(obj):
             global pic
@@ -112,7 +118,7 @@ def ScreenShot():
 
 
     def guiScreen():
-        root = Toplevel()
+        root = tkr.Toplevel()
         root.title('Pic')
         root.geometry('700x600')
         GiaoDien = monitor2(root)
