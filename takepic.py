@@ -46,12 +46,12 @@ class monitor2(Frame):
 
 
 def guiScreen():
-    win = Tk()
-    win.title('Pic')
-    win.geometry('700x400')
-    GiaoDien = monitor2(win)
+    root = Tk()
+    root.title('Pic')
+    root.geometry('700x400')
+    GiaoDien = monitor2(root)
     GiaoDien.place(relwidth=1, relheight=1)
-    win.mainloop()
+    root.mainloop()
 
 
 guiScreen()
