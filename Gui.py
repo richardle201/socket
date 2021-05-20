@@ -44,7 +44,7 @@ class monitor(Frame):
         obj.Exit_ = exTK.Button(obj, text='Thoát', command=obj.quit)
         master.bind('<Configure>', obj.placeGUI)
     def connect(obj):
-        ip = obj.inputText.get()
+        ip = str(obj.inputText.get())
 
 
 
