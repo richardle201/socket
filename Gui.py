@@ -4,6 +4,7 @@ from tkinter import filedialog
 import pyautogui
 import pickle
 from PIL import ImageTk, Image
+import socket
 
 
 class monitor(Frame):
@@ -45,6 +46,20 @@ class monitor(Frame):
         master.bind('<Configure>', obj.placeGUI)
     def connect(obj):
         ip = str(obj.inputText.get())
+        s = client(ip)
+        s.connect()
+        return s.isConnected()
+
+class client():
+    def __init__(self,ip):
+        self.s = socket.socket()
+        self.ip = ip
+        self.port = 2345
+    def connect(self):
+        self.s.connect((self.ip,self.port))   
+    def isConnected(self):
+        if (self.s.recv(2048)).decode() == 'Connecting...':
+            return True
 
 
 
@@ -106,3 +121,5 @@ def ScreenShot():
     guiScreen()
     
 guiStart()
+
+
