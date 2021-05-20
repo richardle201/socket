@@ -1,4 +1,6 @@
-from tkinter import *
+import socket
+import tkinter as ttk
+# from tkinter import *
 import tkinter.ttk as exTK
 from tkinter import filedialog
 import pyautogui
@@ -6,7 +8,8 @@ import pickle
 from PIL import ImageTk, Image
 
 
-class monitor(Frame):
+
+class monitor(ttk.Frame):
     def placeGUI(obj, e):
         if e.widget == obj:
             obj.update()
@@ -34,7 +37,7 @@ class monitor(Frame):
     def __init__(obj, master):
         super().__init__(master)
         obj.inputText = exTK.Entry(obj)
-        obj.connect_ = exTK.Button(obj, text='Kết nối')
+        obj.connect_ = exTK.Button(obj, text='Kết nối',command=Cli)
         obj.ProcessRunning_ = exTK.Button(obj, text='Process Running')
         obj.AppRunning_ = exTK.Button(obj, text='App Running')
         obj.Shutdown_ = exTK.Button(obj, text='Tắt máy')
@@ -46,15 +49,29 @@ class monitor(Frame):
 
 
 def guiStart():
-    win = Tk()
+    win = ttk.Tk()
     win.title('Client')
     win.geometry('700x600')
     GiaoDien = monitor(win)
     GiaoDien.place(relwidth=1, relheight=1)
     win.mainloop()
+    
+def Cli():
+    class client():
+        def __init__(self):
+            self.s = socket.socket()
+            self.port = 2345
+        def connect(self,ip):
+            self.s.connect((ip,self.port))   
+        def isConnected(self):
+            if (self.s.recv(2048)).decode() == 'Connecting...':
+                return True
+    s = client()
+    s.connect(socket.gethostname())
+    return s.isConnected()
 
 def ScreenShot():
-    class monitor2(Frame):
+    class monitor2(ttk.Frame):
         def placeGUI(obj, e):
             if e.widget == obj:
                 obj.update()
@@ -68,7 +85,7 @@ def ScreenShot():
 
         def __init__(obj, master):
             super().__init__(master)
-            obj.panel = Label(obj)
+            obj.panel = ttk.Label(obj)
             obj.screen_ = exTK.Button(obj, text='Chụp', command=obj.TakePic)
             obj.save_ = exTK.Button(obj, text='Lưu', command=obj.saved)
             master.bind('<Configure>', obj.placeGUI)
@@ -94,7 +111,7 @@ def ScreenShot():
 
 
     def guiScreen():
-        root = Toplevel()
+        root = ttk.Toplevel()
         root.title('Pic')
         root.geometry('700x600')
         GiaoDien = monitor2(root)
