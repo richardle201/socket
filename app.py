@@ -1,8 +1,6 @@
 import subprocess
 import os
 import signal
-import os
-import signal
 import tkinter as tkr
 from tkinter import *
 import tkinter.ttk as exTK
