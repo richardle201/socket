@@ -5,6 +5,7 @@ from tkinter import *
 import tkinter.ttk as exTK
 import psutil
 
+#server
 def getListProcess():
     try:
         procs = []
@@ -27,7 +28,7 @@ def startProcess(process_name):
 def killProcess(pid):
     os.kill(int(pid), signal.SIGTERM)
 
-
+#client
 def xem():
     data = getListProcess()
     i = 0
