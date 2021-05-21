@@ -36,12 +36,15 @@ class monitor(Frame):
 
     def __init__(obj, master):
         super().__init__(master)
-        obj.inputText = exTK.Entry(obj)
+        obj.inputText = exTK.Entry(obj, font='Calibri 12')
+        obj.inputText.insert(END,'Nhập IP')
         obj.connect_ = exTK.Button(obj, text='Kết nối', command=obj.connect)
-        obj.ProcessRunning_ = exTK.Button(obj, text='Process Running', command=process)
-        obj.AppRunning_ = exTK.Button(obj, text='App Running')
-        obj.Shutdown_ = exTK.Button(obj, text='Tắt máy')
-        obj.ScreenCapture_ = exTK.Button(obj, text='Chụp màn hình',command=ScreenShot)
+        obj.ProcessRunning_ = exTK.Button(
+            obj, text='Process\nRunning', command=process)
+        obj.AppRunning_ = exTK.Button(obj, text='App Running', command=app)
+        obj.Shutdown_ = exTK.Button(obj, text='Tắt\nmáy')
+        obj.ScreenCapture_ = exTK.Button(
+            obj, text='Chụp màn hình', command=ScreenShot)
         obj.Keystroke_ = exTK.Button(obj, text='Keystroke')
         obj.EditRegistry_ = exTK.Button(obj, text='Sửa Registry')
         obj.Exit_ = exTK.Button(obj, text='Thoát', command=obj.quit)
