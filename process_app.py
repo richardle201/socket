@@ -1,3 +1,10 @@
+import os
+import signal
+import tkinter as tkr
+from tkinter import *
+import tkinter.ttk as exTK
+import psutil
+
 def getListProcess():
     try:
         procs = []
@@ -87,9 +94,9 @@ sb.config(command=output.yview)
 
 output['columns'] = ('1', '2', '3')
 output.column('#0', width=0, stretch=NO)
-output.column('1', anchor=W, width=80)
-output.column('2', anchor=W, width=80)
-output.column('3', anchor=W, width=80)
+output.column('1', anchor=W, width=10)
+output.column('2', anchor=W, width=10)
+output.column('3', anchor=W, width=10)
 
 output.heading('#0', text='', anchor=CENTER)
 output.heading('1', text='Name process', anchor=CENTER)
