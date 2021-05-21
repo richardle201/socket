@@ -1,13 +1,15 @@
-import tkinter as tkr
+from tkinter import *
 import tkinter.ttk as exTK
 from tkinter import filedialog
 import pyautogui
 import pickle
 from PIL import ImageTk, Image
-import socket
+import os
+import signal
+import psutil
 
 
-class monitor(tkr.Frame):
+class monitor(Frame):
     def placeGUI(obj, e):
         if e.widget == obj:
             obj.update()
@@ -36,7 +38,7 @@ class monitor(tkr.Frame):
         super().__init__(master)
         obj.inputText = exTK.Entry(obj)
         obj.connect_ = exTK.Button(obj, text='Kết nối', command=obj.connect)
-        obj.ProcessRunning_ = exTK.Button(obj, text='Process Running')
+        obj.ProcessRunning_ = exTK.Button(obj, text='Process Running', command=process)
         obj.AppRunning_ = exTK.Button(obj, text='App Running')
         obj.Shutdown_ = exTK.Button(obj, text='Tắt máy')
         obj.ScreenCapture_ = exTK.Button(obj, text='Chụp màn hình',command=ScreenShot)
@@ -46,30 +48,11 @@ class monitor(tkr.Frame):
         master.bind('<Configure>', obj.placeGUI)
     def connect(obj):
         ip = str(obj.inputText.get())
-        s = client(ip)
-        s.connect()
-        return s.isConnected()
-
-class client():
-    status = False
-    def __init__(self,ip):
-        self.s = socket.socket()
-        self.ip = ip
-        self.port = 2345
-    def connect(self):
-        self.s.connect((self.ip,self.port))   
-    def isConnected(self):
-        if (self.s.recv(2048)).decode() == 'Connecting...':
-            self.status = True
-            return True
-        self.status = False
-        return False
-            # print ('đã kết nối thành công')
 
 
 
 def guiStart():
-    win = tkr.Tk()
+    win = Tk()
     win.title('Client')
     win.geometry('700x600')
     GiaoDien = monitor(win)
@@ -77,7 +60,7 @@ def guiStart():
     win.mainloop()
 
 def ScreenShot():
-    class monitor2(tkr.Frame):
+    class monitor2(Frame):
         def placeGUI(obj, e):
             if e.widget == obj:
                 obj.update()
@@ -95,7 +78,6 @@ def ScreenShot():
             obj.screen_ = exTK.Button(obj, text='Chụp', command=obj.TakePic)
             obj.save_ = exTK.Button(obj, text='Lưu', command=obj.saved)
             master.bind('<Configure>', obj.placeGUI)
-            
 
         def saved(obj):
             global pic
@@ -118,14 +100,113 @@ def ScreenShot():
 
 
     def guiScreen():
-        root = tkr.Toplevel()
-        root.title('Pic')
-        root.geometry('700x600')
-        GiaoDien = monitor2(root)
+        win = Toplevel()
+        win.title('Pic')
+        win.geometry('700x600')
+        GiaoDien = monitor2(win)
         GiaoDien.place(relwidth=1, relheight=1)
-        root.mainloop()
+        win.mainloop()
     guiScreen()
-    
+
+def process():
+    def getListProcess():
+        try:
+            procs = []
+            for proc in psutil.process_iter():
+                with proc.oneshot():
+                    info = {}
+                    info['name'] = proc.name()
+                    info['id'] = proc.pid
+                    info['count_threads'] = proc.num_threads()
+                    procs.append(info)
+            return procs
+        except:
+            return []
+
+    def startProcess(process_name):
+        os.system('start ' + process_name)
+
+
+    def killProcess(pid):
+        os.kill(int(pid), signal.SIGTERM)
+
+
+    def xem():
+        data = getListProcess()
+        i = 0
+        for value in data:
+            tmp = str(value['name'])
+            tmp = tmp.split('.exe')
+            output.insert(parent='', index=i, iid=i, values=(
+                tmp[0], value['id'], value['count_threads']))
+            i = i+1
+
+
+    def kill():
+        root = Toplevel()
+        root.title('Kill')
+        root.geometry('450x100')
+        inputText = exTK.Entry(root, font='Car 12')
+        inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
+        inputText.insert(END,'Nhập ID')
+
+        def action():
+            ID = inputText.get()
+        action_ = exTK.Button(root, text='Kill', command=action).place(
+            relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
+        root.mainloop()
+
+    def start():
+        root = Toplevel()
+        root.title('Start')
+        root.geometry('450x100')
+        inputText = exTK.Entry(root ,font='Calibri 12')
+        inputText.insert(END,'Nhập tên')
+        inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
+        
+        def action():
+            ID=inputText.get()
+        action_ = exTK.Button(root, text='Start', command=action).place(
+            relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
+        root.mainloop()
+
+    def xoa():
+        global output
+        for i in output.get_children():
+            output.delete(i)
+        win.update()
+
+    win = Toplevel()
+    win.title('Process')
+    win.geometry('500x500')
+    kill_ = exTK.Button(win, text='Kill', command=kill).place(
+        relheight=0.1, relwidth=0.2, relx=0.075, rely=0.075)
+    xem_ = exTK.Button(win, text='Xem', command=xem).place(
+        relheight=0.1, relwidth=0.2, relx=0.3, rely=0.075)
+    xoa_ = exTK.Button(win, text='Xoá', command=xoa).place(
+        relheight=0.1, relwidth=0.2, relx=0.525, rely=0.075)
+    start_ = exTK.Button(win, text='Start', command=start).place(
+        relheight=0.1, relwidth=0.2, relx=0.75, rely=0.075)
+    global output
+    output = exTK.Treeview(win)
+
+    sb = Scrollbar(win, orient=VERTICAL)
+    sb.place(relheight=0.7, relwidth=0.05, relx=0.9, rely=0.225)
+    output.config(yscrollcommand=sb.set)
+    sb.config(command=output.yview)
+
+    output['columns'] = ('1', '2', '3')
+    output.column('#0', width=0, stretch=NO)
+    output.column('1', anchor=W, width=10)
+    output.column('2', anchor=W, width=10)
+    output.column('3', anchor=W, width=10)
+
+    output.heading('#0', text='', anchor=CENTER)
+    output.heading('1', text='Name process', anchor=CENTER)
+    output.heading('2', text='ID Process', anchor=CENTER)
+    output.heading('3', text='Count Thread', anchor=CENTER)
+    output.place(relheight=0.7, relwidth=0.825, relx=0.075, rely=0.225)
+
+    win.mainloop()
+
 guiStart()
-
-
