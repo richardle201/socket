@@ -49,8 +49,14 @@ class monitor(Frame):
         obj.EditRegistry_ = exTK.Button(obj, text='Sửa Registry')
         obj.Exit_ = exTK.Button(obj, text='Thoát', command=quit)
         master.bind('<Configure>', obj.placeGUI)
+    
     def connect(obj):
         ip = str(obj.inputText.get())
+        sock.Connect(rhost = ip)
+        sock.Send('Connecting...')
+        if sock.Receive() == 'Connected.':
+            #check status == True thì hiện thông báo
+            return True
 
 
 
@@ -223,5 +229,10 @@ def process():
     output.place(relheight=0.7, relwidth=0.825, relx=0.075, rely=0.225)
 
     win.mainloop()
+    
+def start_client():
+    global sock
+    sock = cli.SocketClient()
 
+start_client()
 guiStart()
