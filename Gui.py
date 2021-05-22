@@ -47,7 +47,7 @@ class monitor(Frame):
             obj, text='Chụp màn hình', command=ScreenShot)
         obj.Keystroke_ = exTK.Button(obj, text='Keystroke')
         obj.EditRegistry_ = exTK.Button(obj, text='Sửa Registry')
-        obj.Exit_ = exTK.Button(obj, text='Thoát', command=obj.quit)
+        obj.Exit_ = exTK.Button(obj, text='Thoát', command=quit)
         master.bind('<Configure>', obj.placeGUI)
     def connect(obj):
         ip = str(obj.inputText.get())
@@ -55,12 +55,24 @@ class monitor(Frame):
 
 
 def guiStart():
+    global win
     win = Tk()
     win.title('Client')
     win.geometry('700x600')
     GiaoDien = monitor(win)
     GiaoDien.place(relwidth=1, relheight=1)
     win.mainloop()
+    
+def quit():
+    global win
+    try:
+        #gửi thông tin cho server ở đây
+        win.destroy()
+        return
+    except:
+        pass
+    win.destroy()
+
 
 def ScreenShot():
     class monitor2(Frame):
