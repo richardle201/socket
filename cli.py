@@ -19,8 +19,6 @@ class Socket:
         self.sock.close()
         if self.verbose:
             print('SocketUtils:Socket Closed!!')
-    def __str__(self):
-        return 'SocketUtils.Socket\nSocket created on Host='+str(self.host)+',Port='+str(self.port)
 class SocketClient(Socket):
     status = False
     def Connect(self,rhost=socket.gethostname(),rport=2345):
@@ -37,7 +35,9 @@ class SocketClient(Socket):
     def Send(self,data):
         if self.verbose:
             print('Sending data of size ',len(data))
-        self.sock.send(data)
+        if type(data) == str:
+            data = data.encode()
+        self.sock.sendall(data)
         if self.verbose:
             print('Data sent!!')
     def Receive(self,size=1024):
