@@ -57,22 +57,19 @@ class monitor(Frame):
 
     def connect(obj):
         ip = str(obj.inputText.get())
+        #có thể là cần phải thêm try except ở đoạn này, nếu connect được thì hiện gui kết nối thành công, nếu lỗi thì hiện lỗi kết nối
         sock.Connect(rhost=ip)
         sock.Send('Connecting...')
-        if sock.Receive() == 'Connected.':
-            #Không cần check, chỉ cần gán status=True nếu kết nối thành công
-            #check status == True thì hiện thông báo
+        if sock.Receive().decode() == 'Connected.':
             connect_notification()
-            return True
 
 
 def connect_notification():
-    global status
     def OK():
         root.destroy()
-    if status==False:
+    if sock.status==False:
         text_ = 'Lỗi kết nối đến server'
-        status=True
+        sock.status=True
     else:
         text_='Kết nối đến server thành công'
     root = Toplevel()
@@ -96,7 +93,7 @@ def guiStart():
 def quit():
     global windows
     try:
-        #gửi thông tin cho server ở đây
+        sock.Send('Quit')
         windows.destroy()
         return
     except:
@@ -116,8 +113,7 @@ def notConnect():
     root.mainloop()
 
 def ScreenShot():
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
         class monitor2(Frame):
@@ -149,9 +145,9 @@ def ScreenShot():
 
             def TakePic(obj):
                 global img, pic
-                #Nhận dữ liệu từ server ở đây, bỏ 2 dòng code bên dưới
-                im = pyautogui.screenshot()
-                data = pickle.dumps(im)
+                sock.Send('Screenshot')
+                data = sock.Receive()
+                print(data)
                 pic = pickle.loads(data)
                 width, height = pic.size
                 img = pic.resize(
@@ -218,8 +214,7 @@ def process():
         action_ = exTK.Button(root, text='Kill', command=action).place(
             relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         root.mainloop()
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
         def start():
@@ -315,8 +310,7 @@ def app():
         os.kill(int(pid), signal.SIGTERM)
 
     # client
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
         def xem():
@@ -406,8 +400,7 @@ def app():
         win.mainloop()
 
 def keyStroke():
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
         win = Toplevel()
@@ -450,13 +443,8 @@ def keyStroke():
 
         win.mainloop()
 
-def start_client():
-    global sock
-    sock = cli.SocketClient()
-
 def fix_reg():
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
         win = Toplevel()
@@ -533,11 +521,12 @@ def fix_reg():
         win.mainloop()
 
 def Shutdown():
-    global status
-    if status == False:
+    if sock.status == False:
         notConnect()
     else:
-        data = 'Shotdown'
-        #Gửi dữ liệu qua server
+        sock.Send('Shutdown')
+def start_client():
+    global sock
+    sock = cli.SocketClient()
 start_client()
 guiStart()
