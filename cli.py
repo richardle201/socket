@@ -37,16 +37,10 @@ class SocketClient(Socket):
     def Send(self,data):
         if self.verbose:
             print('Sending data of size ',len(data))
-        if type(data) == str:
-            data = data.encode()
         self.sock.send(data)
         if self.verbose:
             print('Data sent!!')
     def Receive(self,size=1024):
         if self.verbose:
             print('Receiving data...')
-        return self.sock.recv(size).decode()
-    def __str__(self):
-        return 'SocketUtils.SocketClient\nClient connected to Host='+str(self.rhost)+',Port='+str(self.rport)
-
-
+        return self.sock.recv(size)
