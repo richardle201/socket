@@ -146,9 +146,14 @@ def ScreenShot():
             def TakePic(obj):
                 global img, pic
                 sock.Send('Screenshot')
-                data = sock.Receive()
-                print(data)
+                data = b""
+                while True:
+                    packet = sock.Receive()
+                    if not packet: break
+                    data += packet
                 pic = pickle.loads(data)
+               # data = sock.Receive()
+               # pic = pickle.loads(data)
                 width, height = pic.size
                 img = pic.resize(
                     (int(width / 4), int(height / 4)), Image.ANTIALIAS)
@@ -168,31 +173,33 @@ def ScreenShot():
 
 def process():
     #3 hàm bên dưới là của server
-    def getListProcess():
-        try:
-            procs = []
-            for proc in psutil.process_iter():
-                with proc.oneshot():
-                    info = {}
-                    info['name'] = proc.name()
-                    info['id'] = proc.pid
-                    info['count_threads'] = proc.num_threads()
-                    procs.append(info)
-            return procs
-        except:
-            return []
+    # def getListProcess():
+    #     try:
+    #         procs = []
+    #         for proc in psutil.process_iter():
+    #             with proc.oneshot():
+    #                 info = {}
+    #                 info['name'] = proc.name()
+    #                 info['id'] = proc.pid
+    #                 info['count_threads'] = proc.num_threads()
+    #                 procs.append(info)
+    #         return procs
+    #     except:
+    #         return []
 
-    def startProcess(process_name):
-        os.system('start ' + process_name)
+    # def startProcess(process_name):
+    #     os.system('start ' + process_name)
 
-    def killProcess(pid):
-        os.kill(int(pid), signal.SIGTERM)
+    # def killProcess(pid):
+    #     os.kill(int(pid), signal.SIGTERM)
     #client
     def xem():
         #Thay data = nhận dữ liệu từ server
-        data = getListProcess()
+        sock.Send('List process')
+        data = sock.Receive()
+        procs = pickle.loads(data)
         i = 0
-        for value in data:
+        for value in procs:
             tmp = str(value['name'])
             tmp = tmp.split('.exe')
             output.insert(parent='', index=i, iid=i, values=(
@@ -206,38 +213,42 @@ def process():
         inputText = exTK.Entry(root, font='Car 12')
         inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
         inputText.insert(END, 'Nhập ID')
-
+        sock.Send('Kill process')
         def action():
-            ID = inputText.get()
+            id = inputText.get()
+            sock.Send(id)
             #Gửi ID qua cho server
             # killProcess(ID) dòng này test chức năng
         action_ = exTK.Button(root, text='Kill', command=action).place(
             relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         root.mainloop()
-    if sock.status == False:
-        notConnect()
-    else:
-        def start():
+    def start():
             root = Toplevel()
             root.title('Start')
             root.geometry('450x100')
             inputText = exTK.Entry(root, font='Calibri 12')
             inputText.insert(END, 'Nhập tên')
             inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
-
+            sock.Send('Start process')
             def action():
                 name = inputText.get()
+                sock.Send(name)
                 #Gửi name qua cho server
                 #startProcess(name) dòng này test chức năng
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
 
-        def xoa():
-            global output
-            for i in output.get_children():
-                output.delete(i)
-            win.update()
+    def xoa():
+        global output
+        for i in output.get_children():
+            output.delete(i)
+        win.update()
+
+    if sock.status == False:
+        notConnect()
+    else:
+        
 
         win = Toplevel()
         win.title('Process')
@@ -314,8 +325,9 @@ def app():
         notConnect()
     else:
         def xem():
+            sock.Send('List app')
             #Sửa data nhận dữ liệu từ server
-            data = getListApp()
+            data = sock.Receive().decode()
             i = 0
             for value in data:
                 tmp = str(value['name'])
@@ -332,9 +344,10 @@ def app():
             inputText = exTK.Entry(root, font='Car 12')
             inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
             inputText.insert(END, 'Nhập ID')
-
+            sock.Send('Kill app')
             def action():
-                ID = inputText.get()
+                id = inputText.get()
+                sock.Send(id)
                 #Gửi ID cho server
                 #killProcess(ID)
             action_ = exTK.Button(root, text='Kill', command=action).place(
@@ -349,9 +362,10 @@ def app():
             inputText = exTK.Entry(root, font='Calibri 12')
             inputText.insert(END, 'Nhập tên')
             inputText.place(relheight=0.35, relwidth=0.6, relx=0.05, rely=0.25)
-
+            sock.Send('Start app')
             def action():
                 name = inputText.get()
+                sock.Send(name)
                 #Gửi name cho server
                 #startProcess(name)
             action_ = exTK.Button(root, text='Start', command=action).place(
@@ -406,12 +420,14 @@ def keyStroke():
         win = Toplevel()
         win.title('Keystroke')
         win.geometry('500x500')
-
+        sock.Send('Keystroke')
         def hook():
+            sock.Send('Hook')
             #Gửi báo hiệu keylog
             a='' #Để cho đỡ báo lỗi
 
         def unhook():
+            sock.Send('Unhook')
             #Gửi báo hiệu thoát keylog
             a=''
 
@@ -423,7 +439,7 @@ def keyStroke():
 
         def inphim():
             global output_key
-            data=''   #Dữ liệu nhận từ server 
+            data = sock.Receive().decode()   #Dữ liệu nhận từ server 
             output_key.configure(state=NORMAL)
             output_key.insert(END,data)
             output_key.configure(state=DISABLED)
