@@ -1,1 +1,1 @@
-RUN Server.exe and Client.exe
+RUN Server.py and Client.py
