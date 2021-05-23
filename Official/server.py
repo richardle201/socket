@@ -1,3 +1,5 @@
+from tkinter import *
+import tkinter.ttk as exTK
 import socket
 import os
 import process
