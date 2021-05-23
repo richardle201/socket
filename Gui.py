@@ -185,7 +185,6 @@ def notification_pro_app(tex):
         root.mainloop()
 
 def process():
-    sock.Send('Process')
     def xem():
         sock.Send('List process')
         procs = sock.Receive()
@@ -207,7 +206,8 @@ def process():
         def action():
             id = inputText.get()
             sock.Send(id)
-            notification_pro_app('Đã diệt process')
+            note = sock.Receive()
+            notification_pro_app(note)
         action_ = exTK.Button(root, text='Kill', command=action).place(
             relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         root.mainloop()
@@ -222,7 +222,8 @@ def process():
             def action():
                 name = inputText.get()
                 sock.Send(name)
-                notification_pro_app('Process đã được bật')
+                note = sock.Receive()
+                notification_pro_app(note)
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
@@ -296,6 +297,8 @@ def app():
             def action():
                 id = inputText.get()
                 sock.Send(id)
+                note = sock.Receive()
+                notification_pro_app(note)
             action_ = exTK.Button(root, text='Kill', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
@@ -312,6 +315,8 @@ def app():
             def action():
                 name = inputText.get()
                 sock.Send(name)
+                note = sock.Receive()
+                notification_pro_app(note)
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
@@ -322,7 +327,6 @@ def app():
             for i in output.get_children():
                 output.delete(i)
             win.update()
-
 
         win = Toplevel()
         win.title('listApp')
