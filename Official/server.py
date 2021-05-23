@@ -3,7 +3,6 @@ import os
 import process
 import keylog
 import screen
-import registry
 from struct import *
 import pickle
 
