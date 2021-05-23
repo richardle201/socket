@@ -134,11 +134,11 @@ class SocketServer(Socket):
 
 
 sv = SocketServer()
-print(socket.gethostname())
+#print(socket.gethostname())
 
 while True:
     sv.Listen()
     while True:
         msg = sv.Receive()
         sv.Choices(msg)
-sv.Close()
+#sv.Close()
