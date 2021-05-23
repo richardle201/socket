@@ -1,8 +1,24 @@
 import socket
 import pyautogui
-import pickle
 import os
 import process
+import psutil
+from struct import *
+import pickle
+
+def getListProcess():
+    try:
+        procs = []
+        for proc in psutil.process_iter():
+            with proc.oneshot():
+                info = {}
+                info['name'] = proc.name()
+                info['id'] = proc.pid
+                info['count_threads'] = proc.num_threads()
+                procs.append(info)
+        return procs
+    except:
+        return []
 class SocketError(Exception):
     pass
 class Socket:
@@ -52,36 +68,54 @@ class SocketServer(Socket):
             if self.verbose:
                 print('Got connection from',self.rhost)
         print (msg,self.rhost)
-    def Send(self,data):
-        if self.verbose:
-            print('Sending data of size ',len(data))
-        if type(data) == str:
-            data = data.encode()
-        self.conn.sendall(data)
-        if self.verbose:
-            print('Data sent!!')
-    def Receive(self,size=4096):
-        if self.verbose:
-            print('Receiving data...')
-        return self.conn.recv(size)
+    def Send(self, obj):
+        msg = pickle.dumps(obj)
+        length = pack('>Q',len(msg))
+        self.conn.sendall(length)
+        self.conn.sendall(msg)
+    def Receive(self):
+        msg = bytearray()
+        header = self.conn.recv(8)
+        (length,) = unpack('>Q',header)
+        length_recv = 0
+        while length_recv < length:
+            s = self.conn.recv(8192)
+            msg += s
+            length_recv += len(s)
+        return pickle.loads(msg)
+    # def Send_(self, data):
+    #     if self.verbose:
+    #         print('Sending data of size ',len(data))
+    #     if type(data) == str:
+    #         data = data.encode()
+    #     self.conn.sendall(data)
+    #     if self.verbose:
+    #         print('Data sent!!')
+    # def Receive(self,size=4096):
+    #     if self.verbose:
+    #         print('Receiving data...')
+    #     return self.conn.recv(size)
     def Choices(self,msg):
         if msg == 'Connecting...':
             self.Send('Connected.')
         elif msg == 'Screenshot':
-            im = pyautogui.screenshot()
-            data = pickle.dumps(im)
-            self.Send(data)
+            img = pyautogui.screenshot()
+            self.Send(img)
         elif msg == 'Shutdown':
             self.conn.close()
             self.Close()
             os.system("shutdown /s /t 1")
         elif msg == 'Process':
-            while True:
-                msg2 = self.Receive().decode()
-                if msg2 == 'List process':
-                    procs = process.getListProcess()
-                    data = pickle.dumps(procs)
-                    self.Send(data)
+            msg2 = self.Receive()
+            if msg2 == 'List process':
+                data = process.getListProcess()
+                self.Send(data)
+            elif msg2 == 'Kill process':
+                ID = self.Receive()
+                process.killProcess(ID)
+            elif msg2 == 'Start process':
+                name = self.Receive()
+                process.Startprocess(name)
             
             
         elif msg =='App':
@@ -100,7 +134,7 @@ print(socket.gethostname())
 while True:
     sv.Listen()
     while True:
-        msg = sv.Receive().decode()
+        msg = sv.Receive()
         sv.Choices(msg)
     # sv.Send(msg)
     # msg = sv.Receive()
