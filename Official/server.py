@@ -134,8 +134,6 @@ class SocketServer(Socket):
 
 def startServer():
     sv = SocketServer()
-    print(socket.gethostname())
-
     while True:
         sv.Listen()
         while True:
