@@ -56,7 +56,7 @@ class SocketServer(Socket):
         if self.rhost:
             if self.verbose:
                 print('Got connection from',self.rhost)
-        print (msg,self.rhost)
+        #print (msg,self.rhost)
     def Send(self, obj):
         msg = pickle.dumps(obj)
         length = pack('>Q',len(msg))
