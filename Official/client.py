@@ -421,7 +421,15 @@ def keyStroke():
             global output_key
             data = sock.Receive()
             output_key.configure(state=NORMAL)
-            output_key.insert(END,data)
+            while True:
+                if data.find('enter') == -1:
+                    output_key.insert(END, data)
+                    break
+                else:
+                    tmp = data.split('enter',1)
+                    output_key.insert(END, tmp[0])
+                    output_key.insert(END, 'enter\n')
+                    data = tmp[1]
             output_key.configure(state=DISABLED)
 
         hook_ = exTK.Button(win, text='Hook', command= hook).place(
