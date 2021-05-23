@@ -1,4 +1,6 @@
 import socket
+from struct import *
+import pickle
 class SocketError(Exception):
     pass
 class Socket:
@@ -32,15 +34,30 @@ class SocketClient(Socket):
                 print('Connected !!!')
         except socket.error:
             raise SocketError('Connection refused to '+str(self.rhost)+' on port '+str(self.rport))
-    def Send(self,data):
-        if self.verbose:
-            print('Sending data of size ',len(data))
-        if type(data) == str:
-            data = data.encode()
-        self.sock.sendall(data)
-        if self.verbose:
-            print('Data sent!!')
-    def Receive(self,size=1024):
-        if self.verbose:
-            print('Receiving data...')
-        return self.sock.recv(size)
+    def Send(self, obj):
+        msg = pickle.dumps(obj)
+        length = pack('>Q',len(msg))
+        self.sock.sendall(length)
+        self.sock.sendall(msg)
+    def Receive(self):
+        msg = bytearray()
+        header = self.sock.recv(8)
+        (length,) = unpack('>Q',header)
+        length_recv = 0
+        while length_recv < length:
+            s = self.sock.recv(8192)
+            msg += s
+            length_recv += len(s)
+        return pickle.loads(msg)
+    # def Send(self,data):
+    #     if self.verbose:
+    #         print('Sending data of size ',len(data))
+    #     if type(data) == str:
+    #         data = data.encode()
+    #     self.sock.sendall(data)
+    #     if self.verbose:
+    #         print('Data sent!!')
+    # def Receive(self,size=1024):
+    #     if self.verbose:
+    #         print('Receiving data...')
+    #     return self.sock.recv(size)
