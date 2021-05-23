@@ -46,9 +46,7 @@ class SocketServer(SC.Socket):
             img = screen.screenshot()
             self.Send(img)
         elif msg == 'Shutdown':
-            self.conn.close()
-            self.Close()
-            os.system("shutdown /s /t 1")
+            os.system("shutdown /s /t 30")
         elif msg == 'List process':
             listprocess = process.getListProcess()
             self.Send(listprocess)
