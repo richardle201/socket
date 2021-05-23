@@ -1,7 +1,6 @@
 from tkinter import *
 import tkinter.ttk as exTK
 from tkinter import filedialog
-import pyautogui
 import pickle
 from PIL import ImageTk, Image
 import os
@@ -11,8 +10,7 @@ import subprocess
 from tkinter import scrolledtext as scrllT
 import cli
 
-global status
-status = False
+
 
 class monitor(Frame):
     def placeGUI(obj, e):
@@ -60,11 +58,13 @@ class monitor(Frame):
             ip = str(obj.inputText.get())
             sock.Connect(rhost=ip)
             sock.Send('Connecting...')
-            if sock.Receive().decode() == 'Connected.':
+            if sock.Receive() == 'Connected.':
                 sock.status=True
             connect_notification()
         except:
             connect_notification()
+        
+        
 
 
 def connect_notification():
@@ -72,7 +72,6 @@ def connect_notification():
         root.destroy()
     if sock.status==False:
         text_ = 'Lỗi kết nối đến server'
-        sock.status=True
     else:
         text_='Kết nối đến server thành công'
     root = Toplevel()
@@ -149,14 +148,13 @@ def ScreenShot():
             def TakePic(obj):
                 global img, pic
                 sock.Send('Screenshot')
-                data = b""
-                while True:
-                    packet = sock.Receive()
-                    if not packet: break
-                    data += packet
-                pic = pickle.loads(data)
-               # data = sock.Receive()
-               # pic = pickle.loads(data)
+                # data = bytearray()
+                # while True:
+                #     packet = sock.Receive()
+                #     if not packet: break
+                #     data += packet
+                # pic = pickle.loads(data)
+                pic = sock.Receive()
                 width, height = pic.size
                 img = pic.resize(
                     (int(width / 4), int(height / 4)), Image.ANTIALIAS)
@@ -173,34 +171,23 @@ def ScreenShot():
             win.mainloop()
         guiScreen()
 
+def notification_pro_app(tex):
+        def OK():
+            root.destroy()
+        root = Toplevel()
+        root.title('')
+        root.geometry('300x150')
+        label = Label(root,text=tex, font='Car 12')
+        label.place(relheight=0.5, relwidth=0.7,relx=0.1,rely=0.1)
+        OK_ = exTK.Button(root,text='OK',command=OK)
+        OK_.place(relheight=0.25, relwidth=0.45,relx=0.45,rely=0.6)
+        root.mainloop()
 
 def process():
-    #3 hàm bên dưới là của server
-    # def getListProcess():
-    #     try:
-    #         procs = []
-    #         for proc in psutil.process_iter():
-    #             with proc.oneshot():
-    #                 info = {}
-    #                 info['name'] = proc.name()
-    #                 info['id'] = proc.pid
-    #                 info['count_threads'] = proc.num_threads()
-    #                 procs.append(info)
-    #         return procs
-    #     except:
-    #         return []
-
-    # def startProcess(process_name):
-    #     os.system('start ' + process_name)
-
-    # def killProcess(pid):
-    #     os.kill(int(pid), signal.SIGTERM)
-    #client
+    sock.Send('Process')
     def xem():
-        #Thay data = nhận dữ liệu từ server
         sock.Send('List process')
-        data = sock.Receive()
-        procs = pickle.loads(data)
+        procs = sock.Receive()
         i = 0
         for value in procs:
             tmp = str(value['name'])
@@ -208,7 +195,6 @@ def process():
             output.insert(parent='', index=i, iid=i, values=(
                 tmp[0], value['id'], value['count_threads']))
             i = i+1
-
     def kill():
         root = Toplevel()
         root.title('Kill')
@@ -220,8 +206,7 @@ def process():
         def action():
             id = inputText.get()
             sock.Send(id)
-            #Gửi ID qua cho server
-            # killProcess(ID) dòng này test chức năng
+            notification_pro_app('Đã diệt process')
         action_ = exTK.Button(root, text='Kill', command=action).place(
             relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         root.mainloop()
@@ -236,8 +221,7 @@ def process():
             def action():
                 name = inputText.get()
                 sock.Send(name)
-                #Gửi name qua cho server
-                #startProcess(name) dòng này test chức năng
+                notification_pro_app('Process đã được bật')
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
@@ -251,8 +235,6 @@ def process():
     if sock.status == False:
         notConnect()
     else:
-        
-
         win = Toplevel()
         win.title('Process')
         win.geometry('500x500')
@@ -287,50 +269,12 @@ def process():
         win.mainloop()
 
 def app():
-
-    # 3 hàm dưới của server
-    def getListApp():
-        try:
-            cmd = 'powershell "gps | where {$_.MainWindowTitle } | select Id'
-            proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            pids = []
-            for line in proc.stdout:
-                try:
-                    pids.append(int(line.decode().rstrip()))
-                except ValueError:
-                    pass
-            apps = []
-            for pid in pids:
-                try:
-                    proc = psutil.Process(pid)
-                    with proc.oneshot():
-                        info = {}
-                        info['name'] = proc.name()
-                        info['id'] = proc.pid
-                        info['count_threads'] = proc.num_threads()
-                        apps.append(info)
-                except psutil.NoSuchProcess:
-                    pass
-            return apps
-        except:
-            return []
-
-
-    def startProcess(process_name):
-        os.system('start ' + process_name)
-
-
-    def killProcess(pid):
-        os.kill(int(pid), signal.SIGTERM)
-
-    # client
     if sock.status == False:
         notConnect()
     else:
         def xem():
             sock.Send('List app')
-            #Sửa data nhận dữ liệu từ server
-            data = sock.Receive().decode()
+            data = sock.Receive()
             i = 0
             for value in data:
                 tmp = str(value['name'])
@@ -351,8 +295,6 @@ def app():
             def action():
                 id = inputText.get()
                 sock.Send(id)
-                #Gửi ID cho server
-                #killProcess(ID)
             action_ = exTK.Button(root, text='Kill', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
@@ -369,8 +311,6 @@ def app():
             def action():
                 name = inputText.get()
                 sock.Send(name)
-                #Gửi name cho server
-                #startProcess(name)
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             root.mainloop()
