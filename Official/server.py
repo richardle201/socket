@@ -132,12 +132,19 @@ class SocketServer(Socket):
             exit()
 
 
-sv = SocketServer()
-#print(socket.gethostname())
+def startServer():
+    sv = SocketServer()
+    print(socket.gethostname())
 
-while True:
-    sv.Listen()
     while True:
-        msg = sv.Receive()
-        sv.Choices(msg)
-#sv.Close()
+        sv.Listen()
+        while True:
+            msg = sv.Receive()
+            sv.Choices(msg)
+
+win = Tk()
+win.geometry('200x200')
+win.title('Server')
+exTK.Button(win,text='Mở server',command=startServer).place(relheight=0.6,
+            relwidth=0.6,relx=0.2,rely=0.2)
+win.mainloop()
