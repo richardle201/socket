@@ -5,6 +5,7 @@ import keylog
 import screen
 from struct import *
 import pickle
+import socket_class as SC
 class SocketServer(SC.Socket):
     def __init__(self,host=socket.gethostname(),port=2345):
         self.host,self.rhost=host,host
