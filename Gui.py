@@ -56,11 +56,14 @@ class monitor(Frame):
         master.bind('<Configure>', obj.placeGUI)
 
     def connect(obj):
-        ip = str(obj.inputText.get())
-        #có thể là cần phải thêm try except ở đoạn này, nếu connect được thì hiện gui kết nối thành công, nếu lỗi thì hiện lỗi kết nối
-        sock.Connect(rhost=ip)
-        sock.Send('Connecting...')
-        if sock.Receive().decode() == 'Connected.':
+        try:
+            ip = str(obj.inputText.get())
+            sock.Connect(rhost=ip)
+            sock.Send('Connecting...')
+            if sock.Receive().decode() == 'Connected.':
+                sock.status=True
+            connect_notification()
+        except:
             connect_notification()
 
 
