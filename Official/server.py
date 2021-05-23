@@ -1,5 +1,3 @@
-from tkinter import *
-import tkinter.ttk as exTK
 import socket
 import os
 import process
@@ -109,7 +107,7 @@ def startServer():
             sv.Choices(msg)
 
 win = Tk()
-win.geometry('200x200')
+win.geometry('275x275')
 win.title('Server')
 exTK.Button(win,text='Mở server',command=startServer).place(relheight=0.6,
             relwidth=0.6,relx=0.2,rely=0.2)
