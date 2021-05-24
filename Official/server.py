@@ -8,57 +8,25 @@ from struct import *
 import pickle
 from tkinter import *
 import tkinter.ttk as exTK
+import socket_class as SC
 
 
-class SocketError(Exception):
-    pass
-class Socket:
-    def __init__(self,host=socket.gethostname(),port=2345,verbose=0):
-        self.host=host
-        self.port=port
-        self.SocketError=SocketError()
-        self.verbose=verbose
-        try:
-            if self.verbose:
-                print('SocketUtils:Creating Socket()')
-            self.sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        except socket.error:
-            raise SocketError('Error in Socket Object Creation!!')
-    def Close(self):
-        if self.verbose:
-            print('SocketUtils:Closing socket!!')
-        self.sock.close()
-        if self.verbose:
-            print('SocketUtils:Socket Closed!!')
-class SocketServer(Socket):
-    def __init__(self,host=socket.gethostname(),port=2345,verbose=0):
+class SocketServer(SC.Socket):
+    def __init__(self,host=socket.gethostname(),port=2345):
         self.host,self.rhost=host,host
         self.port,self.rport=port,port
-        self.verbose=verbose
         try:
-            if self.verbose:
-                print('SocketUtils:Creating SocketServer()')
             self.sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         except socket.error:
-            raise SocketError('Failed to create SocketServer object!!')
+            raise SC.SocketError('Failed to create SocketServer object!!')
         try:
-            if self.verbose:
-                print('SocketUtils:Binding Socket()')
             self.sock.bind((self.host,self.port))
-            if self.verbose:
-                print (self)
         except socket.error as msg:
-            raise SocketError(msg)
+            raise SC.SocketError(msg)
     def Listen(self,msg='Accepted Connection from:'):
-        if self.verbose:
-            print('Listening to port')%self.port
         self.sock.listen(1)
         self.conn,self.rhost=self.sock.accept()
         self.rhost=self.rhost[0]
-        if self.rhost:
-            if self.verbose:
-                print('Got connection from',self.rhost)
-        #print (msg,self.rhost)
     def Send(self, obj):
         msg = pickle.dumps(obj)
         length = pack('>Q',len(msg))
@@ -164,4 +132,3 @@ win.title('Server')
 exTK.Button(win,text='Mở server',command=startServer).place(relheight=0.6,
             relwidth=0.6,relx=0.2,rely=0.2)
 win.mainloop()
-
