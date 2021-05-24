@@ -104,13 +104,17 @@ class SocketServer(SC.Socket):
             data = registry.getValue(msg[1],msg[2])
             self.Send(data)
         elif msg[0] == 'Set value':
-            self.Send('Set')
+            data = registry.setValue(msg[1],msg[2],msg[3],msg[4])
+            self.Send(data)
         elif msg[0] == 'Delete value':
-            self.Send('Delete')
+            data = registry.deleteValue(msg[1],msg[2])
+            self.Send(data)
         elif msg[0] == 'Create key':
-            self.Send('Create')
+            data = registry.createKey(msg[1])
+            self.Send(data)
         elif msg[0] == 'Delete key':
-            self.Send('Delete')
+            data = registry.deleteKey(msg[1])
+            self.Send(data)
         elif msg == 'Quit':
             self.conn.close()
             self.Close()
