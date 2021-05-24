@@ -7,48 +7,16 @@ import socket
 from struct import *
 import pickle
 import registry
+import socket_class as SC
 
-
-class SocketError(Exception):
-    pass
-
-
-class Socket:
-    def __init__(self, host=socket.gethostname(), port=2345, verbose=0):
-        self.host = host
-        self.port = port
-        self.SocketError = SocketError()
-        self.verbose = verbose
-        try:
-            if self.verbose:
-                print('SocketUtils:Creating Socket()')
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        except socket.error:
-            raise SocketError('Error in Socket Object Creation!!')
-
-    def Close(self):
-        if self.verbose:
-            print('SocketUtils:Closing socket!!')
-        self.sock.close()
-        if self.verbose:
-            print('SocketUtils:Socket Closed!!')
-
-
-class SocketClient(Socket):
+class SocketClient(SC.Socket):
     status = False
-
     def Connect(self, rhost=socket.gethostname(), rport=2345):
         self.rhost, self.rport = rhost, rport
         try:
-            if self.verbose:
-                print('Connecting to '+str(self.rhost) +
-                      ' on port '+str(self.rport))
             self.sock.connect((self.rhost, self.rport))
-            if self.verbose:
-                self.status = True
-                print('Connected !!!')
         except socket.error:
-            raise SocketError('Connection refused to ' +
+            raise SC.SocketError('Connection refused to ' +
                               str(self.rhost)+' on port '+str(self.rport))
 
     def Send(self, obj):
