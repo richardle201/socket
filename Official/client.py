@@ -415,10 +415,10 @@ def keyStroke():
         win.geometry('500x500+125+125')
 
         def hook():
-            sock.Send('Hook')
+                sock.Send('Hook')
 
         def unhook():
-            sock.Send('Unhook')
+                sock.Send('Unhook')
 
         def xoa():
             global output_key
@@ -426,20 +426,23 @@ def keyStroke():
             output_key.delete('1.0', END)
 
         def inphim():
-            sock.Send('Print key')
-            global output_key
-            data = sock.Receive()
-            output_key.configure(state=NORMAL)
-            while True:
-                if data.find('enter') == -1:
-                    output_key.insert(END, data)
-                    break
-                else:
-                    tmp = data.split('enter', 1)
-                    output_key.insert(END, tmp[0])
-                    output_key.insert(END, 'enter\n')
-                    data = tmp[1]
-            output_key.configure(state=DISABLED)
+            try:
+                sock.Send('Print key')
+                global output_key
+                data = sock.Receive()
+                output_key.configure(state=NORMAL)
+                while True:
+                    if data.find('enter') == -1:
+                        output_key.insert(END, data)
+                        break
+                    else:
+                        tmp = data.split('enter', 1)
+                        output_key.insert(END, tmp[0])
+                        output_key.insert(END, 'enter\n')
+                        data = tmp[1]
+                output_key.configure(state=DISABLED)
+            except:
+                return
 
         hook_ = exTK.Button(win, text='Hook', command=hook).place(
             relheight=0.1, relwidth=0.2, relx=0.04, rely=0.075)
@@ -522,9 +525,6 @@ def fix_reg():
             data = [func_.get(),path2_.get('1.0', END),nameValue_.get('1.0', END),value_.get('1.0', END),typedata_.get()]
             sock.Send(data)
             message = sock.Receive()
-            if message == None:
-                print('Error')
-                return
             content2_.configure(state=NORMAL)
             content2_.insert(END, message + '\n')
             content2_.configure(state=DISABLED)
