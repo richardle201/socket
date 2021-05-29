@@ -3,6 +3,7 @@ import tkinter.ttk as exTK
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from tkinter import scrolledtext as scrllT
+from tkinter import messagebox as mesTK
 import socket
 from struct import *
 import pickle
@@ -76,7 +77,7 @@ class monitor(Frame):
         obj.Keystroke_ = exTK.Button(obj, text='Keystroke', command=keyStroke)
         obj.EditRegistry_ = exTK.Button(
             obj, text='Sửa Registry', command=fix_reg)
-        obj.Exit_ = exTK.Button(obj, text='Thoát', command=quit)
+        obj.Exit_ = exTK.Button(obj, text='Thoát', command=quit_)
         master.bind('<Configure>', obj.placeGUI)
 
     def connect(obj):
@@ -90,22 +91,15 @@ class monitor(Frame):
         except:
             connect_notification()
 
+def notification(text):
+    mesTK.showinfo(title='',message=text)
 
 def connect_notification():
-    def OK():
-        root.destroy()
     if sock.status == False:
         text_ = 'Lỗi kết nối đến server'
     else:
         text_ = 'Kết nối đến server thành công'
-    root = Toplevel()
-    root.title('')
-    root.geometry('300x200+200+200')
-    label = Label(root, text=text_)
-    label.place(relheight=0.5, relwidth=0.7, relx=0.1, rely=0.1)
-    OK_ = exTK.Button(root, text='OK', command=OK)
-    OK_.place(relheight=0.2, relwidth=0.45, relx=0.45, rely=0.7)
-    root.mainloop()
+    notification(text_)
 
 
 def guiStart():
@@ -118,7 +112,7 @@ def guiStart():
     windows.mainloop()
 
 
-def quit():
+def quit_():
     global windows
     try:
         sock.Send('Quit')
@@ -129,22 +123,9 @@ def quit():
     windows.destroy()
 
 
-def notConnect():
-    def OK():
-        root.destroy()
-    root = Toplevel()
-    root.title('')
-    root.geometry('250x200+200+200')
-    label = Label(root, text='Chưa kết nối đến server')
-    label.place(relheight=0.5, relwidth=0.7, relx=0.1, rely=0.1)
-    OK_ = exTK.Button(root, text='OK', command=OK)
-    OK_.place(relheight=0.2, relwidth=0.45, relx=0.45, rely=0.7)
-    root.mainloop()
-
-
 def ScreenShot():
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         class monitor2(Frame):
             def placeGUI(obj, e):
@@ -195,19 +176,6 @@ def ScreenShot():
         guiScreen()
 
 
-def notification_pro_app(tex):
-    def OK():
-        root.destroy()
-    root = Toplevel()
-    root.title('')
-    root.geometry('300x150+200+200')
-    label = Label(root, text=tex, font='Car 12')
-    label.place(relheight=0.5, relwidth=0.7, relx=0.1, rely=0.1)
-    OK_ = exTK.Button(root, text='OK', command=OK)
-    OK_.place(relheight=0.25, relwidth=0.45, relx=0.45, rely=0.6)
-    root.mainloop()
-
-
 def process():
     def xem():
         try:
@@ -237,7 +205,7 @@ def process():
                 id = inputText.get()
                 sock.Send(id)
                 note = sock.Receive()
-                notification_pro_app(note)
+                notification(note)
             action_ = exTK.Button(root, text='Kill', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         except:
@@ -257,7 +225,7 @@ def process():
                 name = inputText.get()
                 sock.Send(name)
                 note = sock.Receive()
-                notification_pro_app(note)
+                notification(note)
             action_ = exTK.Button(root, text='Start', command=action).place(
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         except:
@@ -271,7 +239,7 @@ def process():
         win.update()
 
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('Process')
@@ -309,7 +277,7 @@ def process():
 
 def app():
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         def xem():
             try:
@@ -339,7 +307,7 @@ def app():
                     id = inputText.get()
                     sock.Send(id)
                     note = sock.Receive()
-                    notification_pro_app(note)
+                    notification(note)
                 action_ = exTK.Button(root, text='Kill', command=action).place(
                     relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             except:
@@ -359,7 +327,7 @@ def app():
                     name = inputText.get()
                     sock.Send(name)
                     note = sock.Receive()
-                    notification_pro_app(note)
+                    notification(note)
                 action_ = exTK.Button(root, text='Start', command=action).place(
                     relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             except:
@@ -408,7 +376,7 @@ def app():
 
 def keyStroke():
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('Keystroke')
@@ -463,7 +431,7 @@ def keyStroke():
 
 def fix_reg():
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('registry')
@@ -522,12 +490,15 @@ def fix_reg():
 
         def send():
             global func_, path2_, nameValue_, value_, typedata_, content2_
-            data = [func_.get(),path2_.get('1.0', END),nameValue_.get('1.0', END),value_.get('1.0', END),typedata_.get()]
-            sock.Send(data)
-            message = sock.Receive()
-            content2_.configure(state=NORMAL)
-            content2_.insert(END, message + '\n')
-            content2_.configure(state=DISABLED)
+            try:
+                data = [func_.get(),path2_.get('1.0', END),nameValue_.get('1.0', END),value_.get('1.0', END),typedata_.get()]
+                sock.Send(data)
+                message = sock.Receive()
+                content2_.configure(state=NORMAL)
+                content2_.insert(END, message + '\n')
+                content2_.configure(state=DISABLED)
+            except:
+                return
 
         def Delete():
             global content2_
@@ -591,7 +562,7 @@ def fix_reg():
 
 def Shutdown():
     if sock.status == False:
-        notConnect()
+        notification('Chưa kết nối đến server')
     else:
         sock.Send('Shutdown')
 
