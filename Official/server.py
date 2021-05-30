@@ -1,5 +1,4 @@
 import socket
-import threading
 import os
 import process
 import keylog
@@ -10,8 +9,6 @@ import pickle
 from tkinter import *
 import tkinter.ttk as exTK
 import socket_class as SC
-
-
 class SocketServer(SC.Socket):
     def __init__(self,host=socket.gethostname(),port=2345):
         self.host,self.rhost=host,host
@@ -43,8 +40,7 @@ class SocketServer(SC.Socket):
             msg += s
             length_recv += len(s)
         return pickle.loads(msg)
-    def Choices(self):
-        msg = self.Receive()
+    def Choices(self,msg):
         if msg == 'Connecting...':
             self.Send('Connected.')
         elif msg == 'Screenshot':
@@ -106,28 +102,30 @@ class SocketServer(SC.Socket):
             data = registry.getValue(msg[1],msg[2])
             self.Send(data)
         elif msg[0] == 'Set value':
-            self.Send('Set')
+            data = registry.setValue(msg[1],msg[2],msg[3],msg[4])
+            self.Send(data)
         elif msg[0] == 'Delete value':
-            self.Send('Delete')
+            data = registry.deleteValue(msg[1],msg[2])
+            self.Send(data)
         elif msg[0] == 'Create key':
-            self.Send('Create')
+            data = registry.createKey(msg[1])
+            self.Send(data)
         elif msg[0] == 'Delete key':
-            self.Send('Delete')
+            data = registry.deleteKey(msg[1])
+            self.Send(data)
         elif msg == 'Quit':
             self.conn.close()
             self.Close()
             exit()
-
 def startServer():
     sv = SocketServer()
     print(socket.gethostname())
-    sv.Listen()
-    t = threading.Thread(target=sv.Choices())
-    t.start()
-        # msg = sv.Receive()
-        # sv.Choices()
-    
-    
+
+    while True:
+        sv.Listen()
+        while True:
+            msg = sv.Receive()
+            sv.Choices(msg)
 
 win = Tk()
 win.geometry('275x275+500+300')
