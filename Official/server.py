@@ -9,6 +9,8 @@ import pickle
 from tkinter import *
 import tkinter.ttk as exTK
 import socket_class as SC
+
+
 class SocketServer(SC.Socket):
     def __init__(self,host=socket.gethostname(),port=2345):
         self.host,self.rhost=host,host
@@ -36,7 +38,10 @@ class SocketServer(SC.Socket):
         (length,) = unpack('>Q',header)
         length_recv = 0
         while length_recv < length:
-            s = self.conn.recv(8192)
+            if length - length_recv < 1024:
+                s = self.conn.recv(length - length_recv)
+            else:
+                s = self.conn.recv(1024)
             msg += s
             length_recv += len(s)
         return pickle.loads(msg)
@@ -49,7 +54,7 @@ class SocketServer(SC.Socket):
         elif msg == 'Shutdown':
             self.conn.close()
             self.Close()
-            os.system("shutdown /s /t 30")
+            os.system("shutdown /s /t 5")
         elif msg == 'List process':
             listprocess = process.getListProcess()
             self.Send(listprocess)
@@ -117,10 +122,9 @@ class SocketServer(SC.Socket):
             self.conn.close()
             self.Close()
             exit()
+
 def startServer():
     sv = SocketServer()
-    print(socket.gethostname())
-
     while True:
         sv.Listen()
         while True:
