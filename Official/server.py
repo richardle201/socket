@@ -129,9 +129,10 @@ def startThread():
         msg = sv.Receive()
         sv.Choices(msg)
 def startServer():
+    global sv
     sv = SocketServer()
     sv.Listen()
-    thread = threading.Thread(target=startThread, args=(sv,))
+    thread = threading.Thread(target=startThread)
     thread.start()
 #     while True:
 #         sv.Listen()
