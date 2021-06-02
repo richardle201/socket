@@ -125,12 +125,12 @@ class SocketServer(SC.Socket):
             exit()
    
 def startThread():
-    sv.Listen()
     while True:
         msg = sv.Receive()
         sv.Choices(msg)
 def startServer():
     sv = SocketServer()
+    sv.Listen()
     thread = threading.Thread(target=startThread)
     thread.start()
 #     while True:
