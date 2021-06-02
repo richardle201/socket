@@ -131,7 +131,7 @@ def startThread():
 def startServer():
     sv = SocketServer()
     sv.Listen()
-    thread = threading.Thread(target=startThread)
+    thread = threading.Thread(target=startThread, args=(sv,))
     thread.start()
 #     while True:
 #         sv.Listen()
