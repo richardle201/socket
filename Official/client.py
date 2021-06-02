@@ -32,7 +32,10 @@ class SocketClient(SC.Socket):
         (length,) = unpack('>Q', header)
         length_recv = 0
         while length_recv < length:
-            s = self.sock.recv(8192)
+            if length - length_recv < 1024:
+                s = self.sock.recv(length - length_recv)
+            else:
+                s = self.sock.recv(1024)
             msg += s
             length_recv += len(s)
         return pickle.loads(msg)
@@ -172,7 +175,7 @@ def ScreenShot():
             win.geometry('700x600+125+125')
             GiaoDien = monitor2(win)
             GiaoDien.place(relwidth=1, relheight=1)
-            win.mainloop()
+            win.grab_set()
         guiScreen()
 
 
@@ -230,7 +233,7 @@ def process():
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         except:
             return
-        root.mainloop()
+        root.grab_set()
 
     def xoa():
         global output
@@ -272,7 +275,7 @@ def process():
         output.heading('3', text='Count Thread', anchor=CENTER)
         output.place(relheight=0.7, relwidth=0.825, relx=0.075, rely=0.225)
 
-        win.mainloop()
+        win.grab_set()
 
 
 def app():
@@ -312,7 +315,7 @@ def app():
                     relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             except:
                 return
-            root.mainloop()
+            root.grab_set()
 
         def start():
             root = Toplevel()
@@ -332,7 +335,7 @@ def app():
                     relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
             except:
                 return
-            root.mainloop()
+            root.grab_set()
 
         def xoa():
             global output
@@ -371,7 +374,7 @@ def app():
         output.heading('3', text='Count Thread', anchor=CENTER)
         output.place(relheight=0.7, relwidth=0.825, relx=0.075, rely=0.225)
 
-        win.mainloop()
+        win.grab_set()
 
 
 def keyStroke():
@@ -426,7 +429,7 @@ def keyStroke():
             win, font='Calibri 12', state=DISABLED)
         output_key.place(relheight=0.6, relwidth=0.88, relx=0.04, rely=0.25)
 
-        win.mainloop()
+        win.grab_set()
 
 
 def fix_reg():
@@ -557,7 +560,7 @@ def fix_reg():
 
         delete_ = exTK.Button(win, text='Xoá', command=Delete).place(
             relheight=0.05, relwidth=0.2, relx=0.55, rely=0.85)
-        win.mainloop()
+        win.grab_set()
 
 
 def Shutdown():
