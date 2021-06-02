@@ -1,4 +1,5 @@
 import socket
+import threading
 import os
 import process
 import keylog
@@ -122,14 +123,21 @@ class SocketServer(SC.Socket):
             self.conn.close()
             self.Close()
             exit()
-
+   
+def startThread():
+    sv.Listen()
+    while True:
+        msg = sv.Receive()
+        sv.Choices(msg)
 def startServer():
     sv = SocketServer()
-    while True:
-        sv.Listen()
-        while True:
-            msg = sv.Receive()
-            sv.Choices(msg)
+    thread = threading.Thread(target=startThread)
+    thread.start()
+#     while True:
+#         sv.Listen()
+#         while True:
+#             msg = sv.Receive()
+#             sv.Choices(msg)
 
 win = Tk()
 win.geometry('275x275+500+300')
