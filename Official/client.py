@@ -7,11 +7,9 @@ from tkinter import messagebox as mesTK
 import socket
 from struct import *
 import pickle
-import registry
 import socket_class as SC
 
 class SocketClient(SC.Socket):
-    status = False
     def Connect(self, rhost=socket.gethostname(), rport=2345):
         self.rhost, self.rport = rhost, rport
         try:
@@ -87,23 +85,21 @@ class monitor(Frame):
         try:
             ip = str(obj.inputText.get())
             sock.Connect(rhost=ip)
+            if checkConnect() == True:
+                notification('Kết nối đến server thành công')
+        except:
+            notification('Lỗi kết nối đến server')
+
+def checkConnect():
+        try:
             sock.Send('Connecting...')
             if sock.Receive() == 'Connected.':
-                sock.status = True
-            connect_notification()
+                return True
         except:
-            connect_notification()
+            return False
 
 def notification(text):
     mesTK.showinfo(title='',message=text)
-
-def connect_notification():
-    if sock.status == False:
-        text_ = 'Lỗi kết nối đến server'
-    else:
-        text_ = 'Kết nối đến server thành công'
-    notification(text_)
-
 
 def guiStart():
     global windows
@@ -127,7 +123,7 @@ def quit_():
 
 
 def ScreenShot():
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         class monitor2(Frame):
@@ -164,7 +160,7 @@ def ScreenShot():
                 pic = sock.Receive()
                 width, height = pic.size
                 img = pic.resize(
-                    (int(width / 4), int(height / 4)), Image.ANTIALIAS)
+                    (int(width / 2), int(height / 2)), Image.ANTIALIAS)
                 img = ImageTk.PhotoImage(img)
                 obj.panel.configure(image=img)
                 return
@@ -172,7 +168,7 @@ def ScreenShot():
         def guiScreen():
             win = Toplevel()
             win.title('Pic')
-            win.geometry('700x600+125+125')
+            win.geometry('700x500+125+125')
             GiaoDien = monitor2(win)
             GiaoDien.place(relwidth=1, relheight=1)
             win.grab_set()
@@ -213,7 +209,7 @@ def process():
                 relheight=0.35, relwidth=0.25, relx=0.7, rely=0.25)
         except:
             return
-        root.mainloop()
+        root.grab_set()
 
     def start():
         root = Toplevel()
@@ -241,12 +237,12 @@ def process():
             output.delete(i)
         win.update()
 
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('Process')
-        win.geometry('500x500')
+        win.geometry('500x500+200+220')
         kill_ = exTK.Button(win, text='Kill', command=kill).place(
             relheight=0.1, relwidth=0.2, relx=0.075, rely=0.075)
         xem_ = exTK.Button(win, text='Xem', command=xem).place(
@@ -279,7 +275,7 @@ def process():
 
 
 def app():
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         def xem():
@@ -345,7 +341,7 @@ def app():
 
         win = Toplevel()
         win.title('listApp')
-        win.geometry('500x500+125+125')
+        win.geometry('500x500+200+220')
         kill_ = exTK.Button(win, text='Kill', command=kill).place(
             relheight=0.1, relwidth=0.2, relx=0.075, rely=0.075)
         xem_ = exTK.Button(win, text='Xem', command=xem).place(
@@ -378,12 +374,12 @@ def app():
 
 
 def keyStroke():
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('Keystroke')
-        win.geometry('500x500+125+125')
+        win.geometry('500x500+200+220')
 
         def hook():
                 sock.Send('Hook')
@@ -433,12 +429,12 @@ def keyStroke():
 
 
 def fix_reg():
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         win = Toplevel()
         win.title('registry')
-        win.geometry('500x500+125+125')
+        win.geometry('500x500+200+225')
 
         def browser():
             global path_, content_
@@ -461,6 +457,7 @@ def fix_reg():
             data = content_.get('1.0', END)
             sock.Send('import')
             sock.Send(data)
+            notification('Sửa thành công')
 
         def function_(temp):
             global func_, nameValue_, value_, typedata_
@@ -564,7 +561,7 @@ def fix_reg():
 
 
 def Shutdown():
-    if sock.status == False:
+    if checkConnect() == False:
         notification('Chưa kết nối đến server')
     else:
         sock.Send('Shutdown')
