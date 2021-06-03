@@ -132,13 +132,8 @@ def startServer():
     global sv
     sv = SocketServer()
     sv.Listen()
-    thread = threading.Thread(target=startThread)
+    thread = threading.Thread(target=startThread,daemon=TRUE)
     thread.start()
-#     while True:
-#         sv.Listen()
-#         while True:
-#             msg = sv.Receive()
-#             sv.Choices(msg)
 
 win = Tk()
 win.geometry('275x275+500+300')
