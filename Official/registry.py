@@ -1,7 +1,6 @@
 import subprocess
 import os
 import winreg
-import ctypes
 
 
 def format(data):
@@ -12,10 +11,10 @@ def format(data):
 
 def import_filereg(data):
     try:
-        with open('tmp.reg', 'w') as file:
+        with os.open('tmp.reg', 'w') as file:
             file.write(data)
-            subprocess.Popen('reg import tmp.reg', shell=True,
-                             stdout=subprocess.PIPE)
+            a = subprocess.Popen('reg import tmp.reg', shell=True,
+                                 stdout=subprocess.PIPE)
             os.remove('tmp.reg')
             return True
     except:
@@ -29,14 +28,11 @@ def getValue(data, name):
         data2 = str(data[1])
         data2 = format(data2)
         name = format(str(name))
-        if data1 == 'HKEY_CURRENT_USER':
-            with winreg.OpenKey(winreg.HKEY_CURRENT_USER, data2, 0, winreg.KEY_ALL_ACCESS) as registry_key:
-                name = str(name)
-                value, regtype = winreg.QueryValueEx(registry_key, name)
-                winreg.CloseKey(registry_key)
-                return value
-        else:
-            return 'Lỗi'
+        with winreg.OpenKey(getattr(winreg, data1), data2, 0, winreg.KEY_ALL_ACCESS) as registry_key:
+            name = str(name)
+            value, regtype = winreg.QueryValueEx(registry_key, name)
+            winreg.CloseKey(registry_key)
+            return value
     except WindowsError:
         return 'Lỗi'
 
@@ -50,12 +46,9 @@ def setValue(data, name, value, type_):
         name = format(str(name))
         value = format(str(value))
         type_ = format(str(type_))
-        if data1 == 'HKEY_CURRENT_USER':
-            winreg.CreateKey(winreg.HKEY_CURRENT_USER, data2)
-            registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, data2, 0,
-                                          winreg.KEY_WRITE)
-        else:
-            return 'Lỗi'
+        winreg.CreateKey(getattr(winreg, data1),data2)
+        registry_key = winreg.OpenKey(getattr(winreg, data1), data2, 0,
+                                      winreg.KEY_WRITE)
         if str(type_) == 'String':
             winreg.SetValueEx(registry_key, name, 0, winreg.REG_SZ, value)
         elif str(type_) == 'Binary':
@@ -86,7 +79,7 @@ def deleteValue(data, name):
         data2 = format(data2)
         name = format(str(name))
         if data1 == 'HKEY_CURRENT_USER':
-            registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, data2, 0,
+            registry_key = winreg.OpenKey(getattr(winreg, data1), data2, 0,
                                           winreg.KEY_WRITE)
         else:
             return 'Lỗi'
@@ -105,7 +98,7 @@ def createKey(data):
         data2 = format(data2)
         if data1 == 'HKEY_CURRENT_USER':
             registry_key = winreg.CreateKeyEx(
-                winreg.HKEY_CURRENT_USER, data2, 0, winreg.KEY_ALL_ACCESS)
+                getattr(winreg, data1), data2, 0, winreg.KEY_ALL_ACCESS)
         else:
             return 'Lỗi'
         winreg.CloseKey(registry_key)
@@ -122,7 +115,7 @@ def deleteKey(data):
         data2 = format(data2)
         if data1 == 'HKEY_CURRENT_USER':
             registry_key = winreg.DeleteKeyEx(
-                winreg.HKEY_CURRENT_USER, data2, winreg.KEY_WOW64_64KEY, 0)
+                getattr(winreg, data1), data2, winreg.KEY_WOW64_64KEY, 0)
         else:
             return 'Lỗi'
         winreg.CloseKey(registry_key)
