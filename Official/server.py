@@ -127,6 +127,8 @@ class SocketServer(SC.Socket):
             self.conn.close()
             self.Close()
             exit()
+        else:
+            self.Send('Lỗi')
 
 def notification(text):
     mesTK.showinfo(title='',message=text)
