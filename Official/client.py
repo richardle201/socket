@@ -453,15 +453,21 @@ def fix_reg():
             link.close()
 
         def sendContent():
-            global content_
-            data = content_.get('1.0', END)
-            sock.Send('import')
-            sock.Send(data)
-            note = sock.Receive()
-            if note == 'Successful fix':
-                notification('Sửa thành công')
-            elif note == 'Fail fix':
-                notification('Sửa thất bại')
+            try:
+                global content_
+                data = content_.get('1.0', END)
+                if data =='':
+                    notification('Chưa nhập nội dung')
+                    return
+                sock.Send('import')
+                sock.Send(data)
+                note = sock.Receive()
+                if note == 'Successful fix':
+                    notification('Sửa thành công')
+                elif note == 'Fail fix':
+                    notification('Sửa thất bại')
+            except:
+                notification('Lỗi')
 
         def function_(temp):
             global func_, nameValue_, value_, typedata_
@@ -502,7 +508,7 @@ def fix_reg():
                 content2_.insert(END, message + '\n')
                 content2_.configure(state=DISABLED)
             except:
-                return
+                notification('Lỗi')
 
         def Delete():
             global content2_
