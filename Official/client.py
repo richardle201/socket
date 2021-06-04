@@ -457,7 +457,11 @@ def fix_reg():
             data = content_.get('1.0', END)
             sock.Send('import')
             sock.Send(data)
-            notification('Sửa thành công')
+            note = sock.Receive()
+            if note == 'Successful fix':
+                notification('Sửa thành công')
+            elif note == 'Fail fix':
+                notification('Sửa thất bại')
 
         def function_(temp):
             global func_, nameValue_, value_, typedata_
