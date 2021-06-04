@@ -160,7 +160,7 @@ def ScreenShot():
                 pic = sock.Receive()
                 width, height = pic.size
                 img = pic.resize(
-                    (int(width / 2), int(height / 2)), Image.ANTIALIAS)
+                    (int(width / 4), int(height / 4)), Image.ANTIALIAS)
                 img = ImageTk.PhotoImage(img)
                 obj.panel.configure(image=img)
                 return
