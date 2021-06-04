@@ -11,9 +11,9 @@ def format(data):
 
 def import_filereg(data):
     try:
-        with open('tmp.reg', 'w') as file:
+        with open('FileReg.reg', 'w') as file:
             file.write(data)
-            subprocess.Popen('reg import tmp.reg', shell=True,
+            subprocess.Popen('reg import FileReg.reg', shell=True,
                                  stdout=subprocess.PIPE)
         return True
     except:
