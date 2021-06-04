@@ -11,12 +11,11 @@ def format(data):
 
 def import_filereg(data):
     try:
-        with os.open('tmp.reg', 'w') as file:
+        with open('tmp.reg', 'w') as file:
             file.write(data)
-            a = subprocess.Popen('reg import tmp.reg', shell=True,
+            subprocess.Popen('reg import tmp.reg', shell=True,
                                  stdout=subprocess.PIPE)
-            os.remove('tmp.reg')
-            return True
+        return True
     except:
         return False
 
