@@ -9,6 +9,7 @@ from struct import *
 import pickle
 from tkinter import *
 import tkinter.ttk as exTK
+from tkinter import messagebox as mesTK
 import socket_class as SC
 
 
@@ -123,17 +124,23 @@ class SocketServer(SC.Socket):
             self.conn.close()
             self.Close()
             exit()
-   
+
+def notification(text):
+    mesTK.showinfo(title='',message=text)
+
 def startThread():
     while True:
         msg = sv.Receive()
         sv.Choices(msg)
 def startServer():
-    global sv
-    sv = SocketServer()
-    sv.Listen()
-    thread = threading.Thread(target=startThread,daemon=TRUE)
-    thread.start()
+    try:
+        global sv
+        sv = SocketServer()
+        sv.Listen()
+        thread = threading.Thread(target=startThread,daemon=TRUE)
+        thread.start()
+    except:
+        notification('Server đã được mở')
 
 win = Tk()
 win.geometry('275x275+500+300')
