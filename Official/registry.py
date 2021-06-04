@@ -46,7 +46,7 @@ def setValue(data, name, value, type_):
         name = format(str(name))
         value = format(str(value))
         type_ = format(str(type_))
-        winreg.CreateKey(getattr(winreg, data1),data2)
+        winreg.CreateKey(getattr(winreg, data1), data2)
         registry_key = winreg.OpenKey(getattr(winreg, data1), data2, 0,
                                       winreg.KEY_WRITE)
         if str(type_) == 'String':
@@ -78,11 +78,8 @@ def deleteValue(data, name):
         data2 = str(data[1])
         data2 = format(data2)
         name = format(str(name))
-        if data1 == 'HKEY_CURRENT_USER':
-            registry_key = winreg.OpenKey(getattr(winreg, data1), data2, 0,
-                                          winreg.KEY_WRITE)
-        else:
-            return 'Lỗi'
+        registry_key = winreg.OpenKey(
+            getattr(winreg, data1), data2, 0, winreg.KEY_WRITE)
         winreg.DeleteValue(registry_key, name)
         winreg.CloseKey(registry_key)
         return 'Xoá value thành công'
@@ -96,11 +93,8 @@ def createKey(data):
         data1 = str(data[0])
         data2 = str(data[1])
         data2 = format(data2)
-        if data1 == 'HKEY_CURRENT_USER':
-            registry_key = winreg.CreateKeyEx(
-                getattr(winreg, data1), data2, 0, winreg.KEY_ALL_ACCESS)
-        else:
-            return 'Lỗi'
+        registry_key = winreg.CreateKeyEx(
+            getattr(winreg, data1), data2, 0, winreg.KEY_ALL_ACCESS)
         winreg.CloseKey(registry_key)
         return 'Tạo key thành công'
     except WindowsError:
@@ -113,11 +107,8 @@ def deleteKey(data):
         data1 = str(data[0])
         data2 = str(data[1])
         data2 = format(data2)
-        if data1 == 'HKEY_CURRENT_USER':
-            registry_key = winreg.DeleteKeyEx(
-                getattr(winreg, data1), data2, winreg.KEY_WOW64_64KEY, 0)
-        else:
-            return 'Lỗi'
+        registry_key = winreg.DeleteKeyEx(
+            getattr(winreg, data1), data2, winreg.KEY_WOW64_64KEY, 0)
         winreg.CloseKey(registry_key)
         return 'Xoá key thành công'
     except WindowsError:
